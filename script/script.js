@@ -1,4 +1,5 @@
 import { Board } from "./autocircle.js";
+var video = document.getElementById('video');
 var canvas = document.getElementById('canvas');
 var canvas_ori = document.getElementById('canvas_ori');
 var ctx_ori = canvas_ori.getContext('2d', { willReadFrequently: true });
@@ -26,11 +27,12 @@ function setup() {
     board.calcTarget();
     loop();
 }
-var i = 0;
 function loop() {
+    ctx_ori.drawImage(video, 0, 0, canvas_ori.width, canvas_ori.height);
+    board.calcWhitePixel();
+    board.calcTarget();
+    board.applyTarget();
     board.update();
     board.draw();
-    i++;
-    if (i < 1000)
-        requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
 }

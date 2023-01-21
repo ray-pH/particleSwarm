@@ -1,7 +1,8 @@
 import { Board } from "./autocircle.js"
 
-var canvas     : HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
-var canvas_ori : HTMLCanvasElement = document.getElementById('canvas_ori') as HTMLCanvasElement
+var video      : HTMLVideoElement  = document.getElementById('video') as HTMLVideoElement;
+var canvas     : HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
+var canvas_ori : HTMLCanvasElement = document.getElementById('canvas_ori') as HTMLCanvasElement;
 var ctx_ori    = canvas_ori.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
 
 let img : HTMLImageElement = new Image();
@@ -30,11 +31,14 @@ function setup(){
     loop();
 }
 
-var i = 0;
 function loop(){
+    ctx_ori.drawImage(video, 0,0, canvas_ori.width, canvas_ori.height);
+
+    board.calcWhitePixel();
+    board.calcTarget();
+    board.applyTarget();
+
     board.update();
     board.draw();
-    i++;
-    if (i < 1000)
-        requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
 }

@@ -106,6 +106,7 @@ class Board {
             let luma = rgbtoluma(rgb);
             this.lumapixels[i] = luma;
             if (luma >= this.min_luma){
+            // if (luma < this.min_luma){
                 this.whitexys.push([i % nx, Math.floor(i/nx) ]);
             }
         }
@@ -179,6 +180,7 @@ class Board {
             availcircles[i].targetx = 0;
             availcircles[i].targety = 0;
         }
+        // ---------------------------------------------------
 
         // if (availcircles.length <= availtarget.length){
         //     for (let i = 0; i < availcircles.length; i++){
