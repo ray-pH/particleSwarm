@@ -12,7 +12,7 @@ var board = new Board(canvas_ori, canvas);
 var button_debug = document.getElementById("button_debug");
 button_debug.onclick = () => {
     let img = new Image();
-    img.src = "../bapp2.png";
+    img.src = "../bapp3.png";
     img.onload = () => {
         ctx_ori.drawImage(img, 0, 0, canvas.width, canvas.height);
         board.calcWhitePixel();

@@ -115,7 +115,6 @@ class Board {
         this.targetxys = [];
         let area_circle = 4 * this.radius_circle  * this.radius_circle;
         let n_target = Math.floor(this.whitexys.length / area_circle);
-        console.log(this.n_circle, n_target);
         for (let i = 0; i < n_target; i++){
             let id = ~~(Math.random() * this.whitexys.length);
             let [x,y] = this.whitexys[id];
@@ -153,24 +152,54 @@ class Board {
             if (!found) availtarget.push([xt, yt]);
         }
 
-        if (availcircles.length <= availtarget.length){
-            for (let i = 0; i < availcircles.length; i++){
-                let [x,y] = availtarget[i];
-                availcircles[i].targetx = x;
-                availcircles[i].targety = y;
-            }
-        }
-        else if (availcircles.length > availtarget.length){
+        // console.log(availcircles.length, availtarget.length);
+        let n = Math.min(availcircles.length, availtarget.length);
+        for (let k = 0; k < n; k++){
+            let closestdist2 = this.maxdist * this.maxdist;
+            let ci = 0; let cj = 0;
             for (let i = 0; i < availtarget.length; i++){
-                let [x,y] = availtarget[i];
-                availcircles[i].targetx = x;
-                availcircles[i].targety = y;
+                let [xt,yt] = availtarget[i];
+                for (let j = 0; j < availcircles.length; j++){
+                    let c = availcircles[j];
+                    let dist2 = (xt - c.x)*(xt - c.x) + (yt - c.y)*(yt - c.y);
+                    if (dist2 < closestdist2){
+                        closestdist2 = dist2;
+                        ci = i; cj = j;
+                    }
+                }
             }
-            for (let i = availtarget.length; i < availcircles.length; i++){
-                availcircles[i].targetx = 0;
-                availcircles[i].targety = 0;
-            }
+            // after found closest
+            availcircles[cj].targetx = availtarget[ci][0];
+            availcircles[cj].targety = availtarget[ci][1];
+            availcircles.splice(cj,1);
+            availtarget.splice(ci,1);
         }
+
+        for (let i = 0; i < availcircles.length; i++){
+            availcircles[i].targetx = 0;
+            availcircles[i].targety = 0;
+        }
+
+        // if (availcircles.length <= availtarget.length){
+        //     for (let i = 0; i < availcircles.length; i++){
+        //         // loop for all targets
+        //         let [x,y] = availtarget[i];
+        //         // search closest circle
+        //         availcircles[i].targetx = x;
+        //         availcircles[i].targety = y;
+        //     }
+        // }
+        // else if (availcircles.length > availtarget.length){
+        //     for (let i = 0; i < availtarget.length; i++){
+        //         let [x,y] = availtarget[i];
+        //         availcircles[i].targetx = x;
+        //         availcircles[i].targety = y;
+        //     }
+        //     for (let i = availtarget.length; i < availcircles.length; i++){
+        //         availcircles[i].targetx = 0;
+        //         availcircles[i].targety = 0;
+        //     }
+        // }
     }
 
     updateCircles(){
