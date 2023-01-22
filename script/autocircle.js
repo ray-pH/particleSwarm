@@ -48,7 +48,7 @@ class Board {
         this.min_luma = 0.8;
         this.maxdist = canvas_ori.width * canvas_ori.width + canvas_ori.height * canvas_ori.height;
         this.n_circle = 200;
-        this.radius_circle = 2;
+        this.radius_circle = 1.5;
         this.circles = new Array(this.n_circle);
         for (let i = 0; i < this.n_circle; i++) {
             this.circles[i] = new AutoCircle(this.circles, Math.random() * this.canvas_ori.width, Math.random() * this.canvas_ori.height, this.radius_circle);
@@ -220,23 +220,28 @@ class Board {
     }
 }
 class AutoCircle {
-    constructor(acs, x, y, r, max_vel = 3.5) {
+    constructor(acs, x, y, r, max_vel = 2, max_vel_close = 1.0) {
         this.x = 0;
         this.y = 0;
         this.vx = 0;
         this.vy = 0;
         this.radius = 0;
         this.max_vel = 0;
+        this.max_vel_close = 0;
         this.done = false;
         this.targetx = 0;
         this.targety = 0;
+        this.close_max = 0;
+        this.close = false;
         this.x = x;
         this.y = y;
         this.targetx = x;
         this.targety = y;
         this.radius = r;
         this.max_vel = max_vel;
+        this.max_vel_close = max_vel_close;
         this.acs = acs;
+        this.close_max = 2 * r;
     }
     update() {
         this.applyVel();
