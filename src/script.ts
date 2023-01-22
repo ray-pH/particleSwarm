@@ -21,7 +21,7 @@ video.oncanplay = () => {
     canvas_ori.height = canvas_ori.width / aspect_ratio;
     ctx_ori = canvas_ori.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
 
-    canvas.width  = 300;
+    canvas.width  = 400;
     canvas.height = canvas.width / aspect_ratio;
 
     setup();
