@@ -40,6 +40,7 @@ class Board {
         this.pixels_ori = this.imgdata_ori.data;
         this.canvas_cir = canvas_cir;
         this.ctx_cir = this.canvas_cir.getContext('2d', { willReadFrequently: true });
+        this.canvas_scale = this.canvas_cir.width / this.canvas_ori.width;
         this.n = this.canvas_ori.width * this.canvas_ori.height;
         this.lumapixels = new Float32Array(this.n);
         this.whitexys = [];
@@ -206,7 +207,7 @@ class Board {
     }
     drawCircles() {
         for (let c of this.circles)
-            c.draw(this.ctx_cir);
+            c.draw(this.ctx_cir, this.canvas_scale);
     }
     update() {
         // for (let c of this.circles) c.debug_gotoTarget();
@@ -219,7 +220,7 @@ class Board {
     }
 }
 class AutoCircle {
-    constructor(acs, x, y, r, max_vel = 5) {
+    constructor(acs, x, y, r, max_vel = 3.5) {
         this.x = 0;
         this.y = 0;
         this.vx = 0;
@@ -286,9 +287,13 @@ class AutoCircle {
         this.x = this.targetx;
         this.y = this.targety;
     }
-    draw(ctx) {
+    draw(ctx, cscale) {
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        // ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        let x = (this.x * cscale);
+        let y = (this.y * cscale);
+        let r = this.radius * cscale;
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
         // ctx.fillStyle = this.done? 'white' : 'blue';
         ctx.fillStyle = 'white';
         ctx.fill();

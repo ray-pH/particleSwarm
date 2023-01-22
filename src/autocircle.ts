@@ -52,6 +52,7 @@ class Board {
 
     canvas_cir : HTMLCanvasElement;
     ctx_cir    : CanvasRenderingContext2D;
+    canvas_scale : number;
 
     constructor(canvas_ori : HTMLCanvasElement, canvas_cir : HTMLCanvasElement){
         this.canvas_ori  = canvas_ori;
@@ -59,8 +60,9 @@ class Board {
         this.imgdata_ori = this.ctx_ori.getImageData(0,0, this.canvas_ori.width, this.canvas_ori.height);
         this.pixels_ori  = this.imgdata_ori.data;
 
-        this.canvas_cir  = canvas_cir;
-        this.ctx_cir     = this.canvas_cir.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
+        this.canvas_cir   = canvas_cir;
+        this.ctx_cir      = this.canvas_cir.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
+        this.canvas_scale = this.canvas_cir.width / this.canvas_ori.width;
 
         this.n = this.canvas_ori.width * this.canvas_ori.height;
         this.lumapixels = new Float32Array(this.n);
@@ -239,7 +241,7 @@ class Board {
         for (let c of this.circles) c.update();
     }
     drawCircles(){
-        for (let c of this.circles) c.draw(this.ctx_cir);
+        for (let c of this.circles) c.draw(this.ctx_cir, this.canvas_scale);
     }
 
     update(){
@@ -267,7 +269,7 @@ class AutoCircle {
     targety : number = 0;
     acs     : AutoCircle[];
 
-    constructor(acs : AutoCircle[], x : number, y : number, r : number, max_vel : number = 5){
+    constructor(acs : AutoCircle[], x : number, y : number, r : number, max_vel : number = 3.5){
         this.x = x;
         this.y = y;
         this.targetx = x;
@@ -330,9 +332,13 @@ class AutoCircle {
         this.y = this.targety;
     }
 
-    draw(ctx : CanvasRenderingContext2D){
+    draw(ctx : CanvasRenderingContext2D, cscale : number){
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        // ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, false);
+        let x = (this.x * cscale);
+        let y = (this.y * cscale);
+        let r = this.radius * cscale;
+        ctx.arc(x, y, r, 0, 2 * Math.PI, false);
         // ctx.fillStyle = this.done? 'white' : 'blue';
         ctx.fillStyle = 'white';
         ctx.fill();
