@@ -1,0 +1,32 @@
+#canvas {
+    vertical-align: top;
+}
+
+.header {
+    font-family: sans-serif;
+    background-color: black;
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.header > a {
+    float: right;
+    text-decoration: none;
+    margin-left: 10px;
+    background-color: white;
+    color: black;
+    padding: 5px;
+}
+.header > a:hover {
+    background-color: #555555;
+    color: white;
+}
+.header > a:visited {
+    color: black;
+}
+.header > a:visited:hover {
+    color: white;
+}
