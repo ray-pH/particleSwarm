@@ -48,7 +48,7 @@ class Board {
         this.min_luma = 0.8;
         this.maxdist = canvas_ori.width * canvas_ori.width + canvas_ori.height * canvas_ori.height;
         this.n_circle = 250;
-        this.radius_circle = 1.6;
+        this.radius_circle = 1.5;
         this.circles = new Array(this.n_circle);
         for (let i = 0; i < this.n_circle; i++) {
             this.circles[i] = new AutoCircle(this.circles, Math.random() * this.canvas_ori.width, Math.random() * this.canvas_ori.height, this.radius_circle);
