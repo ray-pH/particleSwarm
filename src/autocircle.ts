@@ -270,22 +270,21 @@ class AutoCircle {
     targety : number = 0;
     acs     : AutoCircle[];
 
-    // close_tol : number = 0;
-    // close   : boolean = false;
+    close_dist2 : number = 0;
+    is_close   : boolean = false;
 
     constructor(acs : AutoCircle[], x : number, y : number, r : number, 
-                max_vel : number = 3.5){
-                // max_vel_close : number = 1.0){
+                max_vel : number = 3.5, max_vel_close : number = 1.0){
         this.x = x;
         this.y = y;
         this.targetx = x;
         this.targety = y;
         this.radius  = r;
         this.max_vel = max_vel;
-        // this.max_vel_close = max_vel_close;
+        this.max_vel_close = max_vel_close;
         this.acs = acs;
 
-        // this.close_tol = 2*r;
+        this.close_dist2 = r * r;
     }
 
     update(){
@@ -321,7 +320,8 @@ class AutoCircle {
 
         let v2 = vx*vx + vy*vy;
         let v  = Math.sqrt(v2);
-        let scale = (v <= this.max_vel) ? 1 : this.max_vel/v;
+        let maxvel = this.is_close ? this.max_vel_close : this.max_vel;
+        let scale = (v <= maxvel) ? 1 : maxvel/v;
         this.vx = vx * scale;
         this.vy = vy * scale;
     }
@@ -330,6 +330,7 @@ class AutoCircle {
         let scale = 0.1;
         let dx    = (this.targetx - this.x);
         let dy    = (this.targety - this.y);
+        this.is_close = (dx*dx + dy*dy <= this.close_dist2);
         return [dx*scale, dy*scale];
     }
 

@@ -220,7 +220,7 @@ class Board {
     }
 }
 class AutoCircle {
-    constructor(acs, x, y, r, max_vel = 2, max_vel_close = 1.0) {
+    constructor(acs, x, y, r, max_vel = 3.5, max_vel_close = 1.0) {
         this.x = 0;
         this.y = 0;
         this.vx = 0;
@@ -231,8 +231,8 @@ class AutoCircle {
         this.done = false;
         this.targetx = 0;
         this.targety = 0;
-        this.close_max = 0;
-        this.close = false;
+        this.close_dist2 = 0;
+        this.is_close = false;
         this.x = x;
         this.y = y;
         this.targetx = x;
@@ -241,7 +241,7 @@ class AutoCircle {
         this.max_vel = max_vel;
         this.max_vel_close = max_vel_close;
         this.acs = acs;
-        this.close_max = 2 * r;
+        this.close_dist2 = r * r;
     }
     update() {
         this.applyVel();
@@ -275,7 +275,8 @@ class AutoCircle {
         let vy = vy1 + vy2;
         let v2 = vx * vx + vy * vy;
         let v = Math.sqrt(v2);
-        let scale = (v <= this.max_vel) ? 1 : this.max_vel / v;
+        let maxvel = this.is_close ? this.max_vel_close : this.max_vel;
+        let scale = (v <= maxvel) ? 1 : maxvel / v;
         this.vx = vx * scale;
         this.vy = vy * scale;
     }
@@ -283,6 +284,7 @@ class AutoCircle {
         let scale = 0.1;
         let dx = (this.targetx - this.x);
         let dy = (this.targety - this.y);
+        this.is_close = (dx * dx + dy * dy <= this.close_dist2);
         return [dx * scale, dy * scale];
     }
     debugdone() {
