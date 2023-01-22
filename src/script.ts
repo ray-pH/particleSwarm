@@ -14,16 +14,17 @@ img.onload = () => {
 
 var board = new Board(canvas_ori, canvas);
 var button_debug : HTMLButtonElement = document.getElementById("button_debug") as HTMLButtonElement;
-button_debug.onclick = () => {
-    let img = new Image();
-    img.src = "../bapp3.png";
-    img.onload = () => {
-        ctx_ori.drawImage(img, 0, 0, canvas.width, canvas.height);
-        board.calcWhitePixel();
-        board.calcTarget();
-        board.applyTarget();
-    };
-}
+// button_debug.onclick = () => {
+//     let img = new Image();
+//     img.src = "../bapp3.png";
+//     img.onload = () => {
+//         ctx_ori.drawImage(img, 0, 0, canvas.width, canvas.height);
+//         board.calcWhitePixel();
+//         board.calcTarget();
+//         board.applyTarget();
+//     };
+// }
+
 function setup(){
     board.drawCircles();
     board.calcWhitePixel();
