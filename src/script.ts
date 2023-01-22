@@ -4,14 +4,13 @@ var video      : HTMLVideoElement  = document.getElementById('video') as HTMLVid
 var canvas     : HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement;
 var canvas_ori : HTMLCanvasElement = document.getElementById('canvas_ori') as HTMLCanvasElement;
 var ctx_ori    : CanvasRenderingContext2D;
-// var ctx_ori    = canvas_ori.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
 
-// let img : HTMLImageElement = new Image();
-// img.src = "../bapp.png";
-// img.onload = () => {
-//     ctx_ori.drawImage(img, 0, 0, canvas.width, canvas.height);
-//     setup();
-// }
+var input_vid  : HTMLInputElement  = document.getElementById('input_vid') as HTMLInputElement
+input_vid.onchange = () => {
+    let file = input_vid.files[0]
+    var fileURL = URL.createObjectURL(file)
+    video.src = fileURL
+}
 
 var board : Board; 
 // var button_debug : HTMLButtonElement = document.getElementById("button_debug") as HTMLButtonElement;

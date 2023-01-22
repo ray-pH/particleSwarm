@@ -3,13 +3,12 @@ var video = document.getElementById('video');
 var canvas = document.getElementById('canvas');
 var canvas_ori = document.getElementById('canvas_ori');
 var ctx_ori;
-// var ctx_ori    = canvas_ori.getContext('2d', {willReadFrequently: true}) as CanvasRenderingContext2D;
-// let img : HTMLImageElement = new Image();
-// img.src = "../bapp.png";
-// img.onload = () => {
-//     ctx_ori.drawImage(img, 0, 0, canvas.width, canvas.height);
-//     setup();
-// }
+var input_vid = document.getElementById('input_vid');
+input_vid.onchange = () => {
+    let file = input_vid.files[0];
+    var fileURL = URL.createObjectURL(file);
+    video.src = fileURL;
+};
 var board;
 // var button_debug : HTMLButtonElement = document.getElementById("button_debug") as HTMLButtonElement;
 video.oncanplay = () => {
