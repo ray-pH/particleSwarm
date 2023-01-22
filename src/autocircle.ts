@@ -116,20 +116,51 @@ class Board {
         this.targetxys = [];
         let area_circle = 4 * this.radius_circle  * this.radius_circle;
         let n_target = Math.floor(this.whitexys.length / area_circle);
-        for (let i = 0; i < n_target; i++){
+        n_target = Math.min(n_target, this.circles.length);
+        let N_limit = 10*n_target;
+        let rspace = 2*this.radius_circle;
+        let rspace2 = rspace * rspace;
+
+        for (let i = 0; i < N_limit; i++){
             let id = ~~(Math.random() * this.whitexys.length);
             let [x,y] = this.whitexys[id];
-            // let [x,y] = popRandom(this.whitexys);
             
-            this.targetxys.push([x,y]);
-            let neighs = this.neighs_dpos.map(([dx,dy]) => [x+dx, y+dy]);
-
-            // this.whitexys = this.whitexys.filter(t => !(neighs.includes(t)));
-            this.whitexys = this.whitexys.filter(t => !isInArr2(t, neighs));
-            if (this.whitexys.length <= 0) break;
+            let valid = true;
+            for (let j = 0; j < this.targetxys.length; j++){
+                let [ax,ay] = this.targetxys[j];
+                let dist2 = (ax-x)*(ax-x) + (ay-y)*(ay-y);
+                if (dist2 <= rspace2){
+                    valid = false;
+                    break;
+                }
+            }
+            if (valid) {
+                this.targetxys.push([x,y]);
+                if (this.targetxys.length >= n_target) break;
+            }
         }
         this.applyTarget();
     }
+
+    // calcTarget(){
+    //     this.targetxys = [];
+    //     let area_circle = 4 * this.radius_circle  * this.radius_circle;
+    //     let n_target = Math.floor(this.whitexys.length / area_circle);
+    //     let n = Math.min(n_target, this.circles.length);
+    //     for (let i = 0; i < n; i++){
+    //         let id = ~~(Math.random() * this.whitexys.length);
+    //         let [x,y] = this.whitexys[id];
+    //         // let [x,y] = popRandom(this.whitexys);
+            
+    //         this.targetxys.push([x,y]);
+    //         let neighs = this.neighs_dpos.map(([dx,dy]) => [x+dx, y+dy]);
+
+    //         // this.whitexys = this.whitexys.filter(t => !(neighs.includes(t)));
+    //         this.whitexys = this.whitexys.filter(t => !isInArr2(t, neighs));
+    //         if (this.whitexys.length <= 0) break;
+    //     }
+    //     this.applyTarget();
+    // }
 
     applyTarget(){
         let availcircles = [...this.circles];
@@ -255,12 +286,14 @@ class AutoCircle {
     calcVelRepulsion() : number[] {
         let vx = 0; let vy = 0;
         let scale = 3;
-        for (let c of this.acs){
+        for (let i = 0; i < this.acs.length; i++){
+            let c = this.acs[i];
             let dx = this.x - c.x;
             let dy = this.y - c.y;
             let d2 = dx*dx + dy*dy;
             if (d2 == 0) continue;
-            if (d2 <= Math.pow(c.radius * 2.2, 2)){
+            let rspace = c.radius * 2;
+            if (d2 <= rspace*rspace) {
                 let s = 1/d2;
                 vx += dx * s * scale;
                 vy += dy * s * scale;
