@@ -71,8 +71,8 @@ class Board {
         this.min_luma   = 0.8;
         this.maxdist    = canvas_ori.width * canvas_ori.width + canvas_ori.height * canvas_ori.height;
 
-        this.n_circle = 200;
-        this.radius_circle = 1.5;
+        this.n_circle = 250;
+        this.radius_circle = 1.6;
         this.circles  = new Array<AutoCircle>(this.n_circle);
         for (let i = 0; i < this.n_circle; i++){
             this.circles[i] = new AutoCircle(
@@ -81,17 +81,6 @@ class Board {
                 Math.random()*this.canvas_ori.height,
                 this.radius_circle,
             )
-        }
-        this.calcNeigh_dpos();
-    }
-
-    calcNeigh_dpos(){
-        this.neighs_dpos = [];
-        let rspace = 2*this.radius_circle;
-        for (let dx = -rspace; dx <= rspace; dx++){
-            for (let dy = -rspace; dy <= rspace; dy++){
-                if (dx*dx + dy*dy <= rspace * rspace) this.neighs_dpos.push([dx,dy]);
-            }
         }
     }
 
@@ -116,7 +105,7 @@ class Board {
 
     calcTarget(){
         this.targetxys = [];
-        let area_circle = 4 * this.radius_circle  * this.radius_circle;
+        let area_circle = 3.3 * this.radius_circle  * this.radius_circle;
         let n_target = Math.floor(this.whitexys.length / area_circle);
         n_target = Math.min(n_target, this.circles.length);
         let N_limit = 10*n_target;
@@ -274,7 +263,7 @@ class AutoCircle {
     is_close   : boolean = false;
 
     constructor(acs : AutoCircle[], x : number, y : number, r : number, 
-                max_vel : number = 3.5, max_vel_close : number = 1.0){
+                max_vel : number = 4, max_vel_close : number = 1){
         this.x = x;
         this.y = y;
         this.targetx = x;
