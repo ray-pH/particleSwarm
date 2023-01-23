@@ -209,7 +209,7 @@ class Board {
     }
 }
 class AutoCircle {
-    constructor(acs, x, y, r, max_vel = 4, max_vel_close = 1) {
+    constructor(acs, x, y, r, max_vel = 5, max_vel_close = 1) {
         this.x = 0;
         this.y = 0;
         this.vx = 0;

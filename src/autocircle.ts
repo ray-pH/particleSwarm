@@ -263,7 +263,7 @@ class AutoCircle {
     is_close   : boolean = false;
 
     constructor(acs : AutoCircle[], x : number, y : number, r : number, 
-                max_vel : number = 4, max_vel_close : number = 1){
+                max_vel : number = 5, max_vel_close : number = 1){
         this.x = x;
         this.y = y;
         this.targetx = x;
