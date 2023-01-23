@@ -2,36 +2,6 @@ function rgbtoluma(rgb) {
     let [r, g, b] = rgb;
     return 0.299 * r / 255 + 0.587 * g / 255 + 0.114 * b / 255;
 }
-function mapclamp(x, a, b, m, n) {
-    if (x <= a)
-        return m;
-    if (x >= b)
-        return n;
-    return m + (x - a) * (n - m) / (b - a);
-}
-function popRandom(array) {
-    let i = ~~(Math.random() * array.length);
-    return array.splice(i, 1)[0];
-}
-// function arraysEqual(arr1 : any[], arr2 : any[]) {
-//     if(arr1.length !== arr2.length) return false;
-//     for (let i = 0; i < arr1.length; i++){
-//         if(arr1[i] !== arr2[i]) return false
-//     }
-//     return true;
-// }
-// function isInArr(elem : any[], arr : any[][]) : boolean{
-//     for (let a of arr) { if (arraysEqual(elem, a)) return true; };
-//     return false;
-// }
-function isInArr2(elem, arr) {
-    for (let [x, y] of arr) {
-        if (x == elem[0] && y == elem[1])
-            return true;
-    }
-    ;
-    return false;
-}
 class Board {
     constructor(canvas_ori, canvas_cir) {
         this.canvas_ori = canvas_ori;
@@ -50,12 +20,14 @@ class Board {
         this.n_circle = 250;
         this.radius_circle = 1.5;
         this.circles = new Array(this.n_circle);
+        // initialize all circles
         for (let i = 0; i < this.n_circle; i++) {
             this.circles[i] = new AutoCircle(this.circles, Math.random() * this.canvas_ori.width, Math.random() * this.canvas_ori.height, this.radius_circle);
         }
     }
+    // calculate `this.whitexys`, storing (x,y) position of all white pixels
     calcWhitePixel() {
-        this.lumapixels = new Float32Array(this.n);
+        // this.lumapixels = new Float32Array(this.n);
         this.whitexys = [];
         this.imgdata_ori = this.ctx_ori.getImageData(0, 0, this.canvas_ori.width, this.canvas_ori.height);
         this.pixels_ori = this.imgdata_ori.data;
@@ -65,21 +37,24 @@ class Board {
             let p = 4 * i;
             let rgb = [this.pixels_ori[p + 0], this.pixels_ori[p + 1], this.pixels_ori[p + 2]];
             let luma = rgbtoluma(rgb);
-            this.lumapixels[i] = luma;
+            // this.lumapixels[i] = luma;
             if (luma >= this.min_luma) {
                 // if (luma < this.min_luma){
                 this.whitexys.push([i % nx, Math.floor(i / nx)]);
             }
         }
     }
+    // calculate (x,y) position of the target
     calcTarget() {
         this.targetxys = [];
+        // be generous, assume each circle fill the area of 3.3 r^2
         let area_circle = 3.3 * this.radius_circle * this.radius_circle;
         let n_target = Math.floor(this.whitexys.length / area_circle);
         n_target = Math.min(n_target, this.circles.length);
-        let N_limit = 10 * n_target;
-        let rspace = 2 * this.radius_circle;
+        let N_limit = 10 * n_target; // number of sample to take
+        let rspace = 2 * this.radius_circle; // min distance from other target
         let rspace2 = rspace * rspace;
+        // sample random point from `this.whitexys`
         for (let i = 0; i < N_limit; i++) {
             let id = ~~(Math.random() * this.whitexys.length);
             let [x, y] = this.whitexys[id];
@@ -88,6 +63,7 @@ class Board {
                 let [ax, ay] = this.targetxys[j];
                 let dist2 = (ax - x) * (ax - x) + (ay - y) * (ay - y);
                 if (dist2 <= rspace2) {
+                    // too close to another target
                     valid = false;
                     break;
                 }
@@ -100,27 +76,10 @@ class Board {
         }
         this.applyTarget();
     }
-    // calcTarget(){
-    //     this.targetxys = [];
-    //     let area_circle = 4 * this.radius_circle  * this.radius_circle;
-    //     let n_target = Math.floor(this.whitexys.length / area_circle);
-    //     let n = Math.min(n_target, this.circles.length);
-    //     for (let i = 0; i < n; i++){
-    //         let id = ~~(Math.random() * this.whitexys.length);
-    //         let [x,y] = this.whitexys[id];
-    //         // let [x,y] = popRandom(this.whitexys);
-    //         this.targetxys.push([x,y]);
-    //         let neighs = this.neighs_dpos.map(([dx,dy]) => [x+dx, y+dy]);
-    //         // this.whitexys = this.whitexys.filter(t => !(neighs.includes(t)));
-    //         this.whitexys = this.whitexys.filter(t => !isInArr2(t, neighs));
-    //         if (this.whitexys.length <= 0) break;
-    //     }
-    //     this.applyTarget();
-    // }
     applyTarget() {
         let availcircles = [...this.circles];
         let availtarget = [];
-        // if circle is close enough to target, assign em
+        // if a circle (j) is close enough to a target (i), assign em
         let tol_dist = 2 * this.radius_circle;
         for (let i = 0; i < this.targetxys.length; i++) {
             let found = false;
@@ -129,7 +88,7 @@ class Board {
                 let c = availcircles[j];
                 let dist2 = (xt - c.x) * (xt - c.x) + (yt - c.y) * (yt - c.y);
                 if (dist2 <= tol_dist * tol_dist) {
-                    // found match
+                    // found circle-target match
                     c.targetx = xt;
                     c.targety = yt;
                     availcircles.splice(j, 1);
@@ -140,7 +99,7 @@ class Board {
             if (!found)
                 availtarget.push([xt, yt]);
         }
-        // console.log(availcircles.length, availtarget.length);
+        // assign the rest of the circles and targets, assign the closest first
         let n = Math.min(availcircles.length, availtarget.length);
         for (let k = 0; k < n; k++) {
             let closestdist2 = this.maxdist * this.maxdist;
@@ -164,31 +123,11 @@ class Board {
             availcircles.splice(cj, 1);
             availtarget.splice(ci, 1);
         }
+        // unused circles
         for (let i = 0; i < availcircles.length; i++) {
             availcircles[i].targetx = 0;
             availcircles[i].targety = 0;
         }
-        // ---------------------------------------------------
-        // if (availcircles.length <= availtarget.length){
-        //     for (let i = 0; i < availcircles.length; i++){
-        //         // loop for all targets
-        //         let [x,y] = availtarget[i];
-        //         // search closest circle
-        //         availcircles[i].targetx = x;
-        //         availcircles[i].targety = y;
-        //     }
-        // }
-        // else if (availcircles.length > availtarget.length){
-        //     for (let i = 0; i < availtarget.length; i++){
-        //         let [x,y] = availtarget[i];
-        //         availcircles[i].targetx = x;
-        //         availcircles[i].targety = y;
-        //     }
-        //     for (let i = availtarget.length; i < availcircles.length; i++){
-        //         availcircles[i].targetx = 0;
-        //         availcircles[i].targety = 0;
-        //     }
-        // }
     }
     updateCircles() {
         for (let c of this.circles)
