@@ -5,17 +5,27 @@ var canvas     : HTMLCanvasElement = document.getElementById('canvas') as HTMLCa
 var canvas_ori : HTMLCanvasElement = document.getElementById('canvas_ori') as HTMLCanvasElement;
 var ctx_ori    : CanvasRenderingContext2D;
 
+var board        : Board; 
+var justseeked   : boolean = false;
+var donesetupvid : boolean = false;
+
 var input_vid  : HTMLInputElement  = document.getElementById('input_vid') as HTMLInputElement
 input_vid.onchange = () => {
+    donesetupvid = false;
     let file = input_vid.files[0]
     var fileURL = URL.createObjectURL(file)
     video.src = fileURL
 }
 
-var board : Board; 
 // var button_debug : HTMLButtonElement = document.getElementById("button_debug") as HTMLButtonElement;
 
+video.onseeked = () => {
+    justseeked = true;
+}
 video.oncanplay = () => {
+    if (donesetupvid) return;
+    donesetupvid = true;
+
     let aspect_ratio = video.videoWidth / video.videoHeight;
     canvas_ori.width  = 100;
     canvas_ori.height = canvas_ori.width / aspect_ratio;
@@ -39,9 +49,12 @@ function setup(){
 function loop(){
     ctx_ori.drawImage(video, 0,0, canvas_ori.width, canvas_ori.height);
 
-    board.calcWhitePixel();
-    board.calcTarget();
-    board.applyTarget();
+    if (!video.paused || justseeked){
+        board.calcWhitePixel();
+        board.calcTarget();
+        board.applyTarget();
+        if (justseeked) justseeked = false;
+    }
 
     board.update();
     board.draw();
